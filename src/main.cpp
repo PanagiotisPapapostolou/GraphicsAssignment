@@ -2,8 +2,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-void processInput(GLFWwindow* window); // Processes the input
-void frameBuffer_size_callback(GLFWwindow* window, int width, int height); // Resets the viewport
+static void processInput(GLFWwindow* window); // Processes the input
+static void frameBuffer_size_callback(GLFWwindow* window, const int width, const int height); // Resets the viewport
+
+const unsigned int WINDOW_WIDTH = 1200;
+const unsigned int WINDOW_HEIGHT = 900;
 
 int main(int argc, char* argv[])
 {
@@ -16,7 +19,7 @@ int main(int argc, char* argv[])
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	
 	// Initializing the appliacation window
-	GLFWwindow* window = glfwCreateWindow(800, 600, "Graphics Assignment: Planet Simulation", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Graphics Assignment: Planets Simulation", NULL, NULL);
 	if (window == NULL) {
 		std::cout << "Could not create window." << std::endl;
 		glfwTerminate();
@@ -32,7 +35,7 @@ int main(int argc, char* argv[])
 	}
 	
 	// Setting up the viewport
-	glViewport(0, 0, 800, 600);
+	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 	glfwSetFramebufferSizeCallback(window, frameBuffer_size_callback);
 
 	// Main Application Loop
@@ -51,11 +54,11 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-void processInput(GLFWwindow* window) {
+static void processInput(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 }
 
-void frameBuffer_size_callback(GLFWwindow* window, int width, int height) {
+static void frameBuffer_size_callback(GLFWwindow* window, const int width, const int height) {
 	glViewport(0, 0, width, height);
 }
