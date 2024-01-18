@@ -145,6 +145,11 @@
     <None Include="src\fragment_core.glsl" />
     <None Include="src\vertex_core.glsl" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Linking\include\camera.h" />
+    <ClInclude Include="Linking\include\mesh.h" />
+    <ClInclude Include="Linking\include\model.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -29,4 +29,15 @@
     <None Include="src\vertex_core.glsl" />
     <None Include="src\fragment_core.glsl" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Linking\include\mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Linking\include\model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Linking\include\camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>
