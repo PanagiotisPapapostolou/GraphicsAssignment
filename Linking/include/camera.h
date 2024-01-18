@@ -7,7 +7,7 @@
 
 #include <vector>
 
-enum Camera_Movement { FORWARD, BACKWARD, LEFT, RIGHT };
+enum Camera_Movement { FORWARD, BACKWARD, LEFT, RIGHT, UP, DOWN };
 
 // Default Camera Values
 const float YAW = -90.0f;
@@ -70,6 +70,8 @@ void Camera::ProcessKeyBoard(Camera_Movement direction, float deltaTime)
 	if (direction == BACKWARD) this->Position -= this->Front * velocity;
 	if (direction == LEFT) this->Position -= this->Right * velocity;
 	if (direction == RIGHT) this->Position += this->Right * velocity;
+	if (direction == UP) this->Position += this->WorldUp * velocity;
+	if (direction == DOWN) this->Position -= this->WorldUp * velocity;
 }
 
 /* Processes input received from a mouse input system. Expects the offset value in both the x and y direction. */

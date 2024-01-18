@@ -11,17 +11,25 @@
 
 #include <iostream>
 
+typedef struct EnvironmentColors {
+    float red;
+    float green;
+    float blue;
+    float alpha;
+
+} EnvironmentColors;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 
 /* Settings */
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1200;
+const unsigned int SCR_HEIGHT = 1000;
 
 /* Camera */
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 10.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -29,6 +37,9 @@ bool firstMouse = true;
 /* Timimg */
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+
+/* Environment Options */
+EnvironmentColors envColor = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 int main(int argc, char* argv[])
 {
@@ -71,6 +82,7 @@ int main(int argc, char* argv[])
 
     // Load the models
     Model sun("Assets/sun/scene.gltf");
+    Model earth("Assets/earth/Earth.obj");
 
     /* Application Render Loop */
     while (!glfwWindowShouldClose(window)) {
@@ -83,7 +95,7 @@ int main(int argc, char* argv[])
         processInput(window);
 
         // Rendering
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClearColor(envColor.red, envColor.green, envColor.blue, envColor.alpha);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Don't forget to enable shader before setting uniforms
@@ -98,9 +110,9 @@ int main(int argc, char* argv[])
         // Render the loaded model
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // Translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));     // It's a bit too big for our scene, so scale it down
+        model = glm::scale(model, glm::vec3(1.0f, -1.0f, 1.0f));     // It's a bit too big for our scene, so scale it down
         appShader.setMat4("model", model);
-        sun.draw(appShader);
+        earth.Draw(appShader);
 
         // GLFW: Swap Buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
@@ -121,6 +133,8 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) camera.ProcessKeyBoard(BACKWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) camera.ProcessKeyBoard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) camera.ProcessKeyBoard(RIGHT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) camera.ProcessKeyBoard(UP, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) camera.ProcessKeyBoard(DOWN, deltaTime);
 }
 
 /* GLFW: Whenever the window size changed (by OS or user resize) this callback function executes */
