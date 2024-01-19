@@ -8,7 +8,7 @@
 #include <shader.h>
 #include <camera.h>
 #include <model.h>
-
+#include <math.h>
 #include <iostream>
 
 typedef struct EnvironmentColors {
@@ -39,6 +39,7 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 /* Environment Options */
+const double radius = 20;
 EnvironmentColors envColor = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 int main(int argc, char* argv[])
@@ -83,7 +84,7 @@ int main(int argc, char* argv[])
     // Load the models
     Model sun("Assets/sun/scene.gltf");
     Model earth("Assets/earth/Earth.obj");
-
+    Model moon("Assets/moon/Moon.obj");
     /* Application Render Loop */
     while (!glfwWindowShouldClose(window)) {
         // Per-frame time logic
@@ -110,10 +111,30 @@ int main(int argc, char* argv[])
         // Render the loaded model
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // Translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(1.0f, -1.0f, 1.0f));     // It's a bit too big for our scene, so scale it down
+        model = glm::scale(model, glm::vec3(10.9f, -10.9f, 10.9f));// It's a bit too big for our scene, so scale it down
         appShader.setMat4("model", model);
+        sun.Draw(appShader);
+
+
+
+        double theta = (float)glfwGetTime();
+        double x = radius * cos(theta);
+        double z =radius * sin(theta);
+        glm::mat4 model2 = glm::mat4(1.0f);
+        model2 = glm::translate(model2, glm::vec3(x, 0.0f, z)); // Translate it down so it's at the center of the scene
+        model2 = glm::scale(model2, glm::vec3(0.1f, -0.1f, 0.1f));     // It's a bit too big for our scene, so scale it down
+        model2 = glm::rotate(model2, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+        appShader.setMat4("model", model2);
         earth.Draw(appShader);
 
+
+
+
+        glm::mat4 model3 = glm::mat4(1.0f);
+        model3 = glm::translate(model3, glm::vec3(21.0f, 0.0f, 0.3f)); // Translate it down so it's at the center of the scene
+        model3 = glm::scale(model3, glm::vec3(0.025f, -0.025f, 0.025f));// It's a bit too big for our scene, so scale it down
+        appShader.setMat4("model", model3);
+        moon.Draw(appShader);
         // GLFW: Swap Buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
         glfwPollEvents();
