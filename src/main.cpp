@@ -8,7 +8,7 @@
 #include <shader.h>
 #include <camera.h>
 #include <model.h>
-
+#include <math.h>
 #include <iostream>
 
 typedef struct EnvironmentColors {
@@ -39,7 +39,15 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 /* Environment Options */
+const double earthRadius = 20;
+const double moonRadius = 3;
+const double earthVelocity = 1.0f;
+const double moonVelocity = 2.0f;
 EnvironmentColors envColor = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+struct Point {
+    double x, y, z;
+};
 
 int main(int argc, char* argv[])
 {
@@ -83,6 +91,7 @@ int main(int argc, char* argv[])
     // Load the models
     Model sun("Assets/sun/scene.gltf");
     Model earth("Assets/earth/Earth.obj");
+    Model moon("Assets/moon/Moon.obj");
 
     /* Application Render Loop */
     while (!glfwWindowShouldClose(window)) {
@@ -107,13 +116,42 @@ int main(int argc, char* argv[])
         appShader.setMat4("projection", projection);
         appShader.setMat4("view", view);
 
-        // Render the loaded model
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // Translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(1.0f, -1.0f, 1.0f));     // It's a bit too big for our scene, so scale it down
-        appShader.setMat4("model", model);
+        glm::mat4 moonModel = glm::mat4(1.0f);
+        glm::mat4 earthModel = glm::mat4(1.0f);
+        glm::mat4 sunModel = glm::mat4(1.0f);
+
+        Point earthCoords = { 0.0f, 0.0f, 0.0f };
+        double theta, x, z;
+
+        // Rendering the Earth
+        earthModel = glm::translate(earthModel, glm::vec3(earthCoords.x, earthCoords.y, earthCoords.z));
+        theta = (float)glfwGetTime() * earthVelocity;
+        x = earthRadius * cos(theta);
+        z = earthRadius * sin(theta);
+        earthCoords.x = x;
+        earthCoords.z = z;
+        earthModel = glm::translate(earthModel, glm::vec3(earthCoords.x, earthCoords.y, earthCoords.z));
+        earthModel = glm::scale(earthModel, glm::vec3(0.1f, -0.1f, 0.1f));
+        earthModel = glm::rotate(earthModel, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+        appShader.setMat4("model", earthModel);
         earth.Draw(appShader);
 
+        // Rendering the Moon
+        moonModel = glm::translate(moonModel, glm::vec3(0.0f, 0.0f, 0.0f));
+        theta = (float)glfwGetTime() * moonVelocity;
+        x = moonRadius * cos(theta);
+        z = moonRadius * sin(theta);
+        moonModel = glm::translate(moonModel, glm::vec3(x + earthCoords.x, 0.0f, z + earthCoords.z));
+        moonModel = glm::scale(moonModel, glm::vec3(0.025f, -0.025f, 0.025f));
+        appShader.setMat4("model", moonModel);
+        moon.Draw(appShader);
+
+        // Rendering the Sun
+        sunModel = glm::translate(sunModel, glm::vec3(0.0f, 0.0f, 0.0f)); // Translate it down so it's at the center of the scene
+        sunModel = glm::scale(sunModel, glm::vec3(10.9f, -10.9f, 10.9f));// It's a bit too big for our scene, so scale it down
+        appShader.setMat4("model", sunModel);
+        sun.Draw(appShader);
+        
         // GLFW: Swap Buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
         glfwPollEvents();
