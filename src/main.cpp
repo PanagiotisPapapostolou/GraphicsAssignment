@@ -10,6 +10,8 @@
 #include <model.h>
 #include <math.h>
 #include <iostream>
+#include <thread>
+#include <chrono>
 
 typedef struct EnvironmentColors {
     float red;
@@ -40,14 +42,19 @@ float lastFrame = 0.0f;
 
 /* Environment Options */
 const double earthRadius = 20;
-const double moonRadius = 3;
-const double earthVelocity = 0.2f;
-const double moonVelocity = 2.0f;
+const double moonRadius = 2;
+const double sunVelocity = 0.01f;
+const double earthVelocity = 0.05f;
+const double earthSpinningVelocity = 0.02;
+const double moonVelocity = 0.2f;
+
 EnvironmentColors envColor = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 struct Point {
     double x, y, z;
 };
+
+bool paused = false;
 
 int main(int argc, char* argv[])
 {
@@ -92,6 +99,13 @@ int main(int argc, char* argv[])
     Model sun("Assets/sun/scene.gltf");
     Model earth("Assets/earth/Earth.obj");
     Model moon("Assets/moon/Moon.obj");
+    
+    Point earthCoords = { 0.0f, 0.0f, 0.0f };
+    Point sunCoords = { 20.0f, 0.0f, 0.0f };
+    Point moonCoords = { 0.0f, 0.0f, 0.0f };
+    double earthStepsCounter = 0, earthSpinningCounter = 0;
+    double moonStepsCounter = 0;
+    double theta;
 
     /* Application Render Loop */
     while (!glfwWindowShouldClose(window)) {
@@ -120,13 +134,9 @@ int main(int argc, char* argv[])
         glm::mat4 earthModel = glm::mat4(1.0f);
         glm::mat4 sunModel = glm::mat4(1.0f);
 
-        Point earthCoords = { 0.0f, 0.0f, 0.0f };
-        Point sunCoords = { 20.0f, 0.0f, 0.0f };
-        Point moonCoords = { 0.0f, 0.0f, 0.0f };
-        double theta;
 
         // Rendering the Sun
-        sunCoords.x = (float)glfwGetTime();
+        if (!paused) sunCoords.x += sunVelocity;
         sunModel = glm::translate(sunModel, glm::vec3(sunCoords.x, sunCoords.y, sunCoords.z)); // Translate it down so it's at the center of the scene
         sunModel = glm::scale(sunModel, glm::vec3(10.9f, -10.9f, 10.9f)); // It's a bit too big for our scene, so scale it down
         appShader.setMat4("model", sunModel);
@@ -134,20 +144,27 @@ int main(int argc, char* argv[])
         
         // Rendering the Earth
         earthModel = glm::translate(earthModel, glm::vec3(0.0f, 0.0f, 0.0f));
-        theta = (float)glfwGetTime() * earthVelocity;
-        earthCoords.x = earthRadius * cos(theta);
-        earthCoords.z = earthRadius * sin(theta);
+        theta = earthStepsCounter * earthVelocity;
+        if (!paused) {
+            earthCoords.x = earthRadius * cos(theta);
+            earthCoords.z = earthRadius * sin(theta);
+            earthStepsCounter += earthVelocity;
+            earthSpinningCounter += earthSpinningVelocity;
+        }
         earthModel = glm::translate(earthModel, glm::vec3(sunCoords.x + earthCoords.x, sunCoords.y + earthCoords.y, sunCoords.z + earthCoords.z));
         earthModel = glm::scale(earthModel, glm::vec3(0.1f, -0.1f, 0.1f));
-        earthModel = glm::rotate(earthModel, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+        earthModel = glm::rotate(earthModel, (float)earthSpinningCounter, glm::vec3(0.0f, 1.0f, 0.0f));
         appShader.setMat4("model", earthModel);
         earth.Draw(appShader);
 
         // Rendering the Moon
         moonModel = glm::translate(moonModel, glm::vec3(moonCoords.x, moonCoords.y, moonCoords.z));
-        theta = (float)glfwGetTime() * moonVelocity;
-        moonCoords.x = moonRadius * cos(theta);
-        moonCoords.z = moonRadius * sin(theta);
+        theta = moonStepsCounter * moonVelocity;
+        if (!paused) {
+            moonCoords.x = moonRadius * cos(theta);
+            moonCoords.z = moonRadius * sin(theta);
+            moonStepsCounter += moonVelocity;
+        }
         moonModel = glm::translate(moonModel, glm::vec3(sunCoords.x + moonCoords.x + earthCoords.x, sunCoords.y + moonCoords.y + earthCoords.y, sunCoords.z + moonCoords.z + earthCoords.z));
         moonModel = glm::scale(moonModel, glm::vec3(0.025f, -0.025f, 0.025f));
         appShader.setMat4("model", moonModel);
@@ -174,6 +191,9 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) camera.ProcessKeyBoard(RIGHT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) camera.ProcessKeyBoard(UP, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) camera.ProcessKeyBoard(DOWN, deltaTime);
+
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && !paused) { paused = true; std::this_thread::sleep_for(std::chrono::milliseconds(200)); }
+    else if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && paused) { paused = false; std::this_thread::sleep_for(std::chrono::milliseconds(200)); }
 }
 
 /* GLFW: Whenever the window size changed (by OS or user resize) this callback function executes */
