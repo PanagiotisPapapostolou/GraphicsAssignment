@@ -28,8 +28,8 @@
   <ItemGroup>
     <None Include="src\vertex_core.glsl" />
     <None Include="src\fragment_core.glsl" />
-    <None Include="src\light_casters_vs.glsl" />
-    <None Include="src\light_casters_fs.glsl" />
+    <None Include="src\vertex_core_light_source.glsl" />
+    <None Include="src\fragment_core_light_source.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Linking\include\mesh.h">
