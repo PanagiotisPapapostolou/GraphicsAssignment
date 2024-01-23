@@ -47,9 +47,11 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 /* Environment Options */
-const unsigned int starsAmount = 100;
-
 const double sunSize = 1.0f;
+
+const unsigned int starsAmount = 1000;
+const double starsSize = (float)(sunSize / 40);
+const double starsDistanceFromSun = (float)(sunSize * 85);
 
 const double earthSize = (float)(sunSize / 109.12144);
 const double earthRadius = (float)(sunSize * 4);
@@ -116,16 +118,25 @@ int main(int argc, char* argv[])
     Planet moon("Assets/moon/Moon.obj", moonRadius, moonVelocity, moonSpinningVelocity, moonSize, &earth);
 
     // Loading the stars
-    Planet* stars = new Planet[starsAmount];
-    SphericalCoordinates* sphCoords = new SphericalCoordinates[starsAmount];
+    glm::mat4* starsTransformations = new glm::mat4[starsAmount];
     srand(static_cast<unsigned int>(glfwGetTime()));
     
+    Planet star("Assets/star/star.obj", starsDistanceFromSun, 0, 0, starsSize, &sun);
     for (unsigned int i = 0; i < starsAmount; i++) {
-        Planet star("Assets/star/star.obj", 45, 0, 0, 0.02, &sun);
-        star.setStartPositionOffset(rand() % 1000);
-        sphCoords[i] = { star.distanceFromOrbit, (double)(rand() % 180), (double)(rand() % 360) };
+        glm::mat4 currTransformation = glm::mat4(1.0f);
 
-        stars[i] = star;
+        double r = star.distanceFromOrbit;
+        double theta = (double)(rand() % 180);
+        double phi = (double)(rand() % 360);
+        
+        double x = r * sin(theta) * cos(phi);
+        double y = r * sin(theta) * sin(phi);
+        double z = r * cos(theta);
+
+        currTransformation = glm::translate(currTransformation, glm::vec3(x, y, z));
+        currTransformation = glm::scale(currTransformation, glm::vec3(starsSize, starsSize, starsSize));
+
+        starsTransformations[i] = currTransformation;
     }
 
     /* Application Render Loop */
@@ -174,12 +185,8 @@ int main(int argc, char* argv[])
 
         // Rendering the stars
         for (unsigned int i = 0; i < starsAmount; i++) {
-            double x = sphCoords[i].r * sin(sphCoords[i].theta) * cos(sphCoords[i].phi);
-            double y = sphCoords[i].r * sin(sphCoords[i].theta) * sin(sphCoords[i].phi);
-            double z = sphCoords[i].r * cos(sphCoords[i].theta);
-
-            stars[i].updatePosition(x, y, z);
-            stars[i].draw(lightSourceShader);
+            star.positionTranformation = starsTransformations[i];
+            star.draw(lightSourceShader);
         }
 
         // GLFW: Swap Buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -187,7 +194,7 @@ int main(int argc, char* argv[])
         glfwPollEvents();
     }
 
-    delete[] stars;
+    delete[] starsTransformations;
 
     // GLFW: Terminate, clearing all previously allocated GLFW recourses
     glfwTerminate();
@@ -208,6 +215,9 @@ void processInput(GLFWwindow* window)
 
     if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && !Planet::simulationPaused) { Planet::simulationPaused = true; std::this_thread::sleep_for(std::chrono::milliseconds(200)); }
     else if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && Planet::simulationPaused) { Planet::simulationPaused = false; std::this_thread::sleep_for(std::chrono::milliseconds(200)); }
+    
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS && camera.MovementSpeed == SPEED) { camera.MovementSpeed = SLOWER_SPEED; std::this_thread::sleep_for(std::chrono::milliseconds(100)); }
+    else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS && camera.MovementSpeed == SLOWER_SPEED) { camera.MovementSpeed = SPEED; std::this_thread::sleep_for(std::chrono::milliseconds(100)); }
 }
 
 /* GLFW: Whenever the window size changed (by OS or user resize) this callback function executes */
