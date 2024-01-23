@@ -1,3 +1,5 @@
+/* Filename: camera.h */
+
 #ifndef CAMERA_HEADER
 #define CAMERA_HEADER
 
@@ -16,8 +18,7 @@ const float SPEED = 15.5f;
 const float SENSITIVITY = 0.1f;
 const float ZOOM = 45.0f;
 
-/* An abstract camera class that processes input and calculates the corresponding Euler Angles, 
-   Vectors and Matrices for use in OpenGL */
+/* An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL */
 class Camera {
 private:
 	void updateCameraVectors(void);
