@@ -10,7 +10,7 @@
 #include <shader.h>
 #include <camera.h>
 #include <model.h>
-#include <math.h>
+#include <cmath>
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -37,7 +37,7 @@ const unsigned int SCR_WIDTH = 1200;
 const unsigned int SCR_HEIGHT = 1000;
 
 /* Camera */
-Camera camera(glm::vec3(0.0f, 0.0f, 30.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 10.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -47,12 +47,19 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 /* Environment Options */
-const double earthRadius = 25;
-const double moonRadius = 2;
-const double sunVelocity = 0.0f;
-const double earthVelocity = 0.05f;
-const double earthSpinningVelocity = 0.02;
-const double moonVelocity = 0.2f;
+const unsigned int starsAmount = 100;
+
+const double sunSize = 1.0f;
+
+const double earthSize = (float)(sunSize / 109.12144);
+const double earthRadius = (float)(sunSize * 4);
+const double earthVelocity = (float)(sunSize / 20);
+const double earthSpinningVelocity = (float)(sunSize / 35);
+
+const double moonSize = (float)(earthSize / 4);
+const double moonRadius = (float)(earthSize * 32);
+const double moonVelocity = (float)(earthSize * 20);
+const double moonSpinningVelocity = 0.0f;
 
 EnvironmentColors envColor = { 0.0f, 0.0f, 0.0f, 1.0f };
 
@@ -104,19 +111,17 @@ int main(int argc, char* argv[])
     Shader lightSourceShader("src/vertex_core_light_source.glsl", "src/fragment_core_light_source.glsl");
 
     // Loading all the 3D planet models
-    Planet sun("Assets/sun/scene.gltf", 0, 0, 0, 10.9f, NULL); sun.setOrientation(90, 0, 0);
-    Planet earth("Assets/earth/Earth.obj", 25, 0.05f, 0.02f, 0.1f, &sun);
-    Planet moon("Assets/moon/Moon.obj", 3, 0.2f, 0, 0.025, &earth);
+    Planet sun("Assets/sun/scene.gltf", 0, 0, 0, sunSize, NULL); sun.setOrientation(90, 0, 0);
+    Planet earth("Assets/earth/Earth.obj", earthRadius, earthVelocity, earthSpinningVelocity, earthSize, &sun);
+    Planet moon("Assets/moon/Moon.obj", moonRadius, moonVelocity, moonSpinningVelocity, moonSize, &earth);
 
     // Loading the stars
-
-    unsigned int amount = 1000;
-    Planet* stars = new Planet[amount];
-    SphericalCoordinates* sphCoords = new SphericalCoordinates[amount];
+    Planet* stars = new Planet[starsAmount];
+    SphericalCoordinates* sphCoords = new SphericalCoordinates[starsAmount];
     srand(static_cast<unsigned int>(glfwGetTime()));
     
-    for (unsigned int i = 0; i < amount; i++) {
-        Planet star("Assets/star/star.obj", 35, 0, 0, 0.04, &sun);
+    for (unsigned int i = 0; i < starsAmount; i++) {
+        Planet star("Assets/star/star.obj", 45, 0, 0, 0.02, &sun);
         star.setStartPositionOffset(rand() % 1000);
         sphCoords[i] = { star.distanceFromOrbit, (double)(rand() % 180), (double)(rand() % 360) };
 
@@ -168,7 +173,7 @@ int main(int argc, char* argv[])
         sun.draw(lightSourceShader);
 
         // Rendering the stars
-        for (unsigned int i = 0; i < amount; i++) {
+        for (unsigned int i = 0; i < starsAmount; i++) {
             double x = sphCoords[i].r * sin(sphCoords[i].theta) * cos(sphCoords[i].phi);
             double y = sphCoords[i].r * sin(sphCoords[i].theta) * sin(sphCoords[i].phi);
             double z = sphCoords[i].r * cos(sphCoords[i].theta);

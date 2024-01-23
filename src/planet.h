@@ -65,17 +65,13 @@ void Planet::updatePosition(const double x, const double y, const double z)
 	Point3D currCoords;
 	glm::mat4 transformation = glm::mat4(1.0f);
 	
-	if (x != 0 && y != 0 && z != 0) {
-		currCoords = { x, x, z };
-	}
+	if (x != 0 && y != 0 && z != 0) currCoords = { x, y, z };
 	else {
 		currCoords = { this->coords.x, this->coords.y, this->coords.z };
 		double theta;
 
-		if (velocity != 0)
-			theta = this->stepsCounter * velocity;
-		else
-			theta = this->stepsCounter;
+		if (velocity != 0) theta = this->stepsCounter * velocity;
+		else theta = this->stepsCounter;
 
 		transformation = glm::translate(transformation, glm::vec3(0, 0, 0));
 
@@ -97,8 +93,7 @@ void Planet::updatePosition(const double x, const double y, const double z)
 			currCoords.z += progenitorPlanet->coords.z;
 
 			progenitorPlanet = progenitorPlanet->orbitPlanet;
-		}
-	}
+	}}
 
 	// Perform a transformation to the planet, placing him at the right spot
 	transformation = glm::translate(transformation, glm::vec3(currCoords.x, currCoords.y, currCoords.z));
