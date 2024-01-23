@@ -31,6 +31,7 @@ public:
 	static bool simulationPaused; // Supporting variable that determines whether the user has paused the simulation
 
 	Planet(const std::string& path, const double distanceFromParent, const double velocity, const double spinningVelocity, const double scaleFactor, Planet* parentPlanet);
+	Planet(void): Model() {}
 
 	void inline setStartPositionOffset(const double value);
 	void inline setOrientation(const double xOrient, const double yOrient, const double zOrient);
@@ -63,7 +64,12 @@ void Planet::updatePosition(void)
 {
 	Point3D currCoords = { this->coords.x, this->coords.y, this->coords.z };
 	glm::mat4 transformation = glm::mat4(1.0f);
-	double theta = this->stepsCounter * velocity;
+	double theta;
+
+	if (velocity != 0)
+		theta = this->stepsCounter * velocity;
+	else
+		theta = this->stepsCounter;
 
 	transformation = glm::translate(transformation, glm::vec3(0, 0, 0));
 

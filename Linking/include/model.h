@@ -40,6 +40,7 @@ private:
 
 public:
     Model(std::string const& path, bool gamma = false): gammaCorrection(gamma) { loadModel(path); } // Constructor, expects a filepath to a 3D model.
+    Model(void) {}
     void Draw(Shader& shader);                                                                      // Draws the model, and thus all its meshes
 };
 
