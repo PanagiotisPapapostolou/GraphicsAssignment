@@ -53,6 +53,14 @@ const unsigned int starsAmount = 1000;
 const double starsSize = (float)(sunSize / 40);
 const double starsDistanceFromSun = (float)(sunSize * 85);
 
+const unsigned int rocksAmount = 10000;
+const double rocksSize_MIN = (float)(sunSize / 600);
+const double rocksSize_MAX = (float)(sunSize / 300);
+const double rocksDistanceFromSun_MIN = (float)(sunSize * 2);
+const double rocksDistanceFromSun_MAX = (float)(sunSize * 40);
+const double rocksVelocity_MIN = (float)(sunSize / 40);
+const double rocksVelocity_MAX = (float)(sunSize / 10);
+
 const double earthSize = (float)(sunSize / 109.12144);
 const double earthRadius = (float)(sunSize * 4);
 const double earthVelocity = (float)(sunSize / 20);
@@ -74,6 +82,8 @@ glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
 
 int main(int argc, char* argv[])
 {
+    srand(static_cast<unsigned int>(glfwGetTime()));
+
 	/* GLFW: Initialization and Configuration */
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -82,7 +92,7 @@ int main(int argc, char* argv[])
 	// glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
 	/* GLFW Window Creation */
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "GraphicsAssignment: Planet Simluation", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -119,13 +129,11 @@ int main(int argc, char* argv[])
 
     // Loading the stars
     glm::mat4* starsTransformations = new glm::mat4[starsAmount];
-    srand(static_cast<unsigned int>(glfwGetTime()));
-    
-    Planet star("Assets/star/star.obj", starsDistanceFromSun, 0, 0, starsSize, &sun);
+    Planet star("Assets/star/star.obj", 0, 0, 0, starsSize, &sun);
     for (unsigned int i = 0; i < starsAmount; i++) {
         glm::mat4 currTransformation = glm::mat4(1.0f);
 
-        double r = star.distanceFromOrbit;
+        double r = starsDistanceFromSun;
         double theta = (double)(rand() % 180);
         double phi = (double)(rand() % 360);
         
@@ -137,6 +145,27 @@ int main(int argc, char* argv[])
         currTransformation = glm::scale(currTransformation, glm::vec3(starsSize, starsSize, starsSize));
 
         starsTransformations[i] = currTransformation;
+    }
+    
+    glm::mat4* rocksTransformations = new glm::mat4[rocksAmount];
+    double* rocksDistancesFromSun = new double[rocksAmount];
+    Planet rock("Assets/Rock/rock.obj", 0, 0.1, 0, 0, &sun);
+    for (unsigned int i = 0; i < rocksAmount; i++) {
+        glm::mat4 currTransformation = glm::mat4(1.0);
+        double theta = rand() % 360;
+        double rocksElevation_MIN = -0.2, rocksElevation_MAX = 0.2;
+
+        rocksDistancesFromSun[i] = rocksDistanceFromSun_MIN + ((float)rand() / RAND_MAX) * (rocksDistanceFromSun_MAX - rocksDistanceFromSun_MIN);
+        double rocksSize = rocksSize_MIN + ((float)rand() / RAND_MAX) * (rocksSize_MAX - rocksSize_MIN);
+
+        double x = rocksDistancesFromSun[i] * cos(theta);
+        double z = rocksDistancesFromSun[i] * sin(theta);
+        double y = rocksElevation_MIN + ((float)rand() / RAND_MAX) * (rocksElevation_MAX - rocksElevation_MIN);
+
+        currTransformation = glm::translate(currTransformation, glm::vec3(x, y, z));
+        currTransformation = glm::scale(currTransformation, glm::vec3(rocksSize, rocksSize, rocksSize));
+
+        rocksTransformations[i] = currTransformation;
     }
 
     /* Application Render Loop */
@@ -174,6 +203,12 @@ int main(int argc, char* argv[])
         moon.updatePosition();
         moon.draw(lightShader);
 
+        // Rendering the rocks around the sun
+        for (unsigned int i = 0; i < rocksAmount; i++) {
+            rock.positionTranformation = rocksTransformations[i];
+            rock.draw(lightShader);
+        }
+        
         // Render Light Source
         lightSourceShader.use();
         lightSourceShader.setMat4("projection", projection);
@@ -195,6 +230,8 @@ int main(int argc, char* argv[])
     }
 
     delete[] starsTransformations;
+    delete[] rocksTransformations;
+    delete[] rocksDistancesFromSun;
 
     // GLFW: Terminate, clearing all previously allocated GLFW recourses
     glfwTerminate();
