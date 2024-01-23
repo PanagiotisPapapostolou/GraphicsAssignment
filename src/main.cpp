@@ -99,17 +99,6 @@ int main(int argc, char* argv[])
     Planet sun("Assets/sun/scene.gltf", 0, 0, 0, 10.9f, NULL); sun.setOrientation(90, 0, 0);
     Planet earth("Assets/earth/Earth.obj", 25, 0.05f, 0.02f, 0.1f, &sun);
     Planet moon("Assets/moon/Moon.obj", 3, 0.2f, 0, 0.025, &earth);
-
-    Planet venus("Assets/sun/scene.gltf", 20, 0.08f, 0.05f, 0.6f, &sun);
-    venus.setStartPositionOffset(100);
-    Planet earth2("Assets/earth/Earth.obj", 4, 0.1f, 0.02f, 0.1f, &venus);
-    Planet moon2("Assets/moon/Moon.obj", 3, 0.2f, 0, 0.025, &earth2);
-    moon2.setStartPositionOffset(50);
-
-    lightShader.use();
-    lightShader.setVec3("objectColor", 1.0f, 1.0f, 1.0f);
-    lightShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-    lightShader.setVec3("lightPos", lightPos);
     
     /* Application Render Loop */
     while (!glfwWindowShouldClose(window)) {
@@ -127,6 +116,10 @@ int main(int argc, char* argv[])
 
         // Don't forget to enable shader before setting uniforms
         lightShader.use();
+        lightShader.setVec3("objectColor", 1.0f, 1.0f, 1.0f);
+        lightShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+        lightShader.setVec3("lightPos", lightPos);
+        lightShader.setVec3("viewPos", camera.Position);
 
         // View/Projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -141,18 +134,6 @@ int main(int argc, char* argv[])
         // Rendering the Moon
         moon.updatePosition();
         moon.draw(lightShader);
-
-        // Rendering the Venus
-        venus.updatePosition();
-        venus.draw(lightShader);
-
-        // Rendering the Earth2
-        earth2.updatePosition();
-        earth2.draw(lightShader);
-
-        // Rendering the Moon2
-        moon2.updatePosition();
-        moon2.draw(lightShader);
 
         // Render Light Source
         lightSourceShader.use();
