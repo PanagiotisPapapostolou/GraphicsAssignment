@@ -41,5 +41,8 @@
     <ClInclude Include="Linking\include\camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\planet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

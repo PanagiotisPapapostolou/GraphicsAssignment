@@ -151,6 +151,7 @@
     <ClInclude Include="Linking\include\camera.h" />
     <ClInclude Include="Linking\include\mesh.h" />
     <ClInclude Include="Linking\include\model.h" />
+    <ClInclude Include="src\planet.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
