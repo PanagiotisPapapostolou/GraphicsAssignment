@@ -14,6 +14,7 @@ typedef struct Point3D {
 /* Class that represents a 3D Planet Model */
 class Planet : public Model {
 private:
+public:
 	Point3D coords, orientation; // Planet Coordinates and orientation
 	Planet* orbitPlanet;		 // Ôhe planet on which that planet orbits 
 
@@ -27,7 +28,6 @@ private:
 
 	void fixOrientation(glm::mat4& transformation);
 
-public:
 	static bool simulationPaused; // Supporting variable that determines whether the user has paused the simulation
 
 	Planet(const std::string& path, const double distanceFromParent, const double velocity, const double spinningVelocity, const double scaleFactor, Planet* parentPlanet);
@@ -37,7 +37,7 @@ public:
 	void inline setOrientation(const double xOrient, const double yOrient, const double zOrient);
 	void inline move(const double xFactor, const double yFactor, const double zFactor);
 
-	void updatePosition(void);
+	void updatePosition(const double x=0, const double y=0, const double z=0);
 	void draw(Shader& shader);
 };
 
@@ -60,37 +60,44 @@ Planet::Planet(const std::string& path, const double distanceFromParent, const d
 }
 
 /* Updates the position of the planet in the 3D world */
-void Planet::updatePosition(void)
+void Planet::updatePosition(const double x, const double y, const double z)
 {
-	Point3D currCoords = { this->coords.x, this->coords.y, this->coords.z };
+	Point3D currCoords;
 	glm::mat4 transformation = glm::mat4(1.0f);
-	double theta;
+	
+	if (x != 0 && y != 0 && z != 0) {
+		currCoords = { x, x, z };
+	}
+	else {
+		currCoords = { this->coords.x, this->coords.y, this->coords.z };
+		double theta;
 
-	if (velocity != 0)
-		theta = this->stepsCounter * velocity;
-	else
-		theta = this->stepsCounter;
+		if (velocity != 0)
+			theta = this->stepsCounter * velocity;
+		else
+			theta = this->stepsCounter;
 
-	transformation = glm::translate(transformation, glm::vec3(0, 0, 0));
+		transformation = glm::translate(transformation, glm::vec3(0, 0, 0));
 
-	// if the application is not paused then calculate the new coordinates for the planet according to its rotation around its orbit planet
-	if (!this->simulationPaused) {
-		this->spinningCounter += this->spinningVelocity;
+		// if the application is not paused then calculate the new coordinates for the planet according to its rotation around its orbit planet
+		if (!this->simulationPaused) {
+			this->spinningCounter += this->spinningVelocity;
 
-		if (this->orbitPlanet != NULL) {
-			this->coords.x = this->distanceFromOrbit * cos(theta);
-			this->coords.z = this->distanceFromOrbit * sin(theta);
-			this->stepsCounter += this->velocity;
-	}}
+			if (this->orbitPlanet != NULL) {
+				this->coords.x = this->distanceFromOrbit * cos(theta);
+				this->coords.z = this->distanceFromOrbit * sin(theta);
+				this->stepsCounter += this->velocity;
+		}}
 
-	// Update the current 3D point by assigning to it the correct position values of the planet taking care of every progenitor of that planet
-	Planet* progenitorPlanet = this->orbitPlanet;
-	while (progenitorPlanet != NULL) {
-		currCoords.x += progenitorPlanet->coords.x;
-		currCoords.y += progenitorPlanet->coords.y;
-		currCoords.z += progenitorPlanet->coords.z;
+		// Update the current 3D point by assigning to it the correct position values of the planet taking care of every progenitor of that planet
+		Planet* progenitorPlanet = this->orbitPlanet;
+		while (progenitorPlanet != NULL) {
+			currCoords.x += progenitorPlanet->coords.x;
+			currCoords.y += progenitorPlanet->coords.y;
+			currCoords.z += progenitorPlanet->coords.z;
 
-		progenitorPlanet = progenitorPlanet->orbitPlanet;
+			progenitorPlanet = progenitorPlanet->orbitPlanet;
+		}
 	}
 
 	// Perform a transformation to the planet, placing him at the right spot

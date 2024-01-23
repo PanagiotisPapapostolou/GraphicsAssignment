@@ -17,7 +17,15 @@
 
 #include "planet.h"
 
-struct EnvironmentColors { float red, green, blue, alpha; };
+struct EnvironmentColors { 
+    float red, green, blue, alpha; 
+};
+
+struct SphericalCoordinates {
+    double r;
+    double theta;
+    double phi;
+};
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -102,13 +110,15 @@ int main(int argc, char* argv[])
 
     // Loading the stars
 
-    unsigned int amount = 100;
+    unsigned int amount = 1000;
     Planet* stars = new Planet[amount];
+    SphericalCoordinates* sphCoords = new SphericalCoordinates[amount];
     srand(static_cast<unsigned int>(glfwGetTime()));
     
     for (unsigned int i = 0; i < amount; i++) {
-        Planet star("Assets/star/star.obj", 35, 0, 0, 0.2, &sun);
+        Planet star("Assets/star/star.obj", 35, 0, 0, 0.04, &sun);
         star.setStartPositionOffset(rand() % 1000);
+        sphCoords[i] = { star.distanceFromOrbit, (double)(rand() % 180), (double)(rand() % 360) };
 
         stars[i] = star;
     }
@@ -159,7 +169,11 @@ int main(int argc, char* argv[])
 
         // Rendering the stars
         for (unsigned int i = 0; i < amount; i++) {
-            stars[i].updatePosition();
+            double x = sphCoords[i].r * sin(sphCoords[i].theta) * cos(sphCoords[i].phi);
+            double y = sphCoords[i].r * sin(sphCoords[i].theta) * sin(sphCoords[i].phi);
+            double z = sphCoords[i].r * cos(sphCoords[i].theta);
+
+            stars[i].updatePosition(x, y, z);
             stars[i].draw(lightSourceShader);
         }
 
