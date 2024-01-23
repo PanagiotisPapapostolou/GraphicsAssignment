@@ -99,7 +99,20 @@ int main(int argc, char* argv[])
     Planet sun("Assets/sun/scene.gltf", 0, 0, 0, 10.9f, NULL); sun.setOrientation(90, 0, 0);
     Planet earth("Assets/earth/Earth.obj", 25, 0.05f, 0.02f, 0.1f, &sun);
     Planet moon("Assets/moon/Moon.obj", 3, 0.2f, 0, 0.025, &earth);
+
+    // Loading the stars
+
+    unsigned int amount = 100;
+    Planet* stars = new Planet[amount];
+    srand(static_cast<unsigned int>(glfwGetTime()));
     
+    for (unsigned int i = 0; i < amount; i++) {
+        Planet star("Assets/star/star.obj", 35, 0, 0, 0.2, &sun);
+        star.setStartPositionOffset(rand() % 1000);
+
+        stars[i] = star;
+    }
+
     /* Application Render Loop */
     while (!glfwWindowShouldClose(window)) {
         // Per-frame time logic
@@ -113,7 +126,7 @@ int main(int argc, char* argv[])
         // Rendering
         glClearColor(envColor.red, envColor.green, envColor.blue, envColor.alpha);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+        
         // Don't forget to enable shader before setting uniforms
         lightShader.use();
         lightShader.setVec3("objectColor", 1.0f, 1.0f, 1.0f);
@@ -144,10 +157,18 @@ int main(int argc, char* argv[])
         sun.updatePosition();
         sun.draw(lightSourceShader);
 
+        // Rendering the stars
+        for (unsigned int i = 0; i < amount; i++) {
+            stars[i].updatePosition();
+            stars[i].draw(lightSourceShader);
+        }
+
         // GLFW: Swap Buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+
+    delete[] stars;
 
     // GLFW: Terminate, clearing all previously allocated GLFW recourses
     glfwTerminate();
