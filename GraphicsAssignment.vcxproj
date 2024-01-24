@@ -142,16 +142,17 @@
     <ClCompile Include="src\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\fragment_core.glsl" />
-    <None Include="src\fragment_core_light_source.glsl" />
-    <None Include="src\vertex_core.glsl" />
-    <None Include="src\vertex_core_light_source.glsl" />
+    <None Include="src\shaders\shader.fs" />
+    <None Include="src\shaders\lightShader.fs" />
+    <None Include="src\shaders\shader.vs" />
+    <None Include="src\shaders\lightShader.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Linking\include\camera.h" />
     <ClInclude Include="Linking\include\mesh.h" />
     <ClInclude Include="Linking\include\model.h" />
-    <ClInclude Include="src\planet.h" />
+    <ClInclude Include="src\space\background_star.h" />
+    <ClInclude Include="src\space\astronimical_object.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

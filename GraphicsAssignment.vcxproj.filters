@@ -26,10 +26,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\vertex_core.glsl" />
-    <None Include="src\fragment_core.glsl" />
-    <None Include="src\vertex_core_light_source.glsl" />
-    <None Include="src\fragment_core_light_source.glsl" />
+    <None Include="src\shaders\shader.vs" />
+    <None Include="src\shaders\shader.fs" />
+    <None Include="src\shaders\lightShader.vs" />
+    <None Include="src\shaders\lightShader.fs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Linking\include\mesh.h">
@@ -41,7 +41,10 @@
     <ClInclude Include="Linking\include\camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\planet.h">
+    <ClInclude Include="src\space\astronimical_object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\space\background_star.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
