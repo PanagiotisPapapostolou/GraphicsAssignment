@@ -16,7 +16,7 @@ class Planet : public Model {
 private:
 public:
 	Point3D coords, orientation; // Planet Coordinates and orientation
-	Planet* orbitPlanet;		 // Ôhe planet on which that planet orbits 
+	Planet* orbitPlanet;		 // ï¿½he planet on which that planet orbits 
 
 	double distanceFromOrbit;			  // The radious distance of its orbit planet
 	double velocity, spinningVelocity;    // The plant's velocity around its orbit planet, and its spinning velocity

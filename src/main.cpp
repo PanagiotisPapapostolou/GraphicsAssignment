@@ -17,6 +17,8 @@
 
 #include "planet.h"
 
+#define getRandFloat(min,max) min+((float)rand()/RAND_MAX)*(max-min);
+
 struct EnvironmentColors { 
     float red, green, blue, alpha; 
 };
@@ -25,6 +27,14 @@ struct SphericalCoordinates {
     double r;
     double theta;
     double phi;
+};
+
+struct Rock {
+    glm::mat4 transformation;
+    double distanceFromSun;
+    double size;
+    double orientationX, orientationY, orientationZ;
+    double spinningVelocityX, spinningVelocityY, spinningVelocityZ;
 };
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -53,16 +63,20 @@ const unsigned int starsAmount = 1000;
 const double starsSize = (float)(sunSize / 40);
 const double starsDistanceFromSun = (float)(sunSize * 85);
 
-const unsigned int rocksAmount = 10000;
+const unsigned int rocksAmount = 3000;
 const double rocksSize_MIN = (float)(sunSize / 600);
-const double rocksSize_MAX = (float)(sunSize / 300);
+const double rocksSize_MAX = (float)(sunSize / 100);
 const double rocksDistanceFromSun_MIN = (float)(sunSize * 2);
 const double rocksDistanceFromSun_MAX = (float)(sunSize * 40);
+const double rocksOrientation_MIN = 0;
+const double rocksOrientation_MAX = 360;
 const double rocksVelocity_MIN = (float)(sunSize / 40);
 const double rocksVelocity_MAX = (float)(sunSize / 10);
+const double rocksSpinningVelocity_MIN = (float)(sunSize / 10000);
+const double rocksSpinningVelocity_MAX = (float)(sunSize / 1000);
 
 const double earthSize = (float)(sunSize / 109.12144);
-const double earthRadius = (float)(sunSize * 4);
+const double earthRadius = (float)(sunSize * 6);
 const double earthVelocity = (float)(sunSize / 20);
 const double earthSpinningVelocity = (float)(sunSize / 35);
 
@@ -123,13 +137,14 @@ int main(int argc, char* argv[])
     Shader lightSourceShader("src/vertex_core_light_source.glsl", "src/fragment_core_light_source.glsl");
 
     // Loading all the 3D planet models
-    Planet sun("Assets/sun/scene.gltf", 0, 0, 0, sunSize, NULL); sun.setOrientation(90, 0, 0);
-    Planet earth("Assets/earth/Earth.obj", earthRadius, earthVelocity, earthSpinningVelocity, earthSize, &sun);
-    Planet moon("Assets/moon/Moon.obj", moonRadius, moonVelocity, moonSpinningVelocity, moonSize, &earth);
+    Planet sun_model("Assets/sun/scene.gltf", 0, 0, 0, sunSize, NULL); sun_model.setOrientation(90, 0, 0);
+    Planet earth_model("Assets/earth/Earth.obj", earthRadius, earthVelocity, earthSpinningVelocity, earthSize, &sun_model);
+    Planet moon_model("Assets/moon/Moon.obj", moonRadius, moonVelocity, moonSpinningVelocity, moonSize, &earth_model);
+    Planet star_model("Assets/star/star.obj", 0, 0, 0, starsSize, &sun_model);
+    Planet rock_model("Assets/Rock/rock.obj", 0, 0.1, 0, 0, &sun_model);
 
-    // Loading the stars
+    /* Loading the stars backgound */
     glm::mat4* starsTransformations = new glm::mat4[starsAmount];
-    Planet star("Assets/star/star.obj", 0, 0, 0, starsSize, &sun);
     for (unsigned int i = 0; i < starsAmount; i++) {
         glm::mat4 currTransformation = glm::mat4(1.0f);
 
@@ -147,25 +162,35 @@ int main(int argc, char* argv[])
         starsTransformations[i] = currTransformation;
     }
     
-    glm::mat4* rocksTransformations = new glm::mat4[rocksAmount];
-    double* rocksDistancesFromSun = new double[rocksAmount];
-    Planet rock("Assets/Rock/rock.obj", 0, 0.1, 0, 0, &sun);
+    /* Loading the rocks around the sun */
+    Rock* rocks = new Rock[rocksAmount];
     for (unsigned int i = 0; i < rocksAmount; i++) {
         glm::mat4 currTransformation = glm::mat4(1.0);
         double theta = rand() % 360;
         double rocksElevation_MIN = -0.2, rocksElevation_MAX = 0.2;
 
-        rocksDistancesFromSun[i] = rocksDistanceFromSun_MIN + ((float)rand() / RAND_MAX) * (rocksDistanceFromSun_MAX - rocksDistanceFromSun_MIN);
-        double rocksSize = rocksSize_MIN + ((float)rand() / RAND_MAX) * (rocksSize_MAX - rocksSize_MIN);
+        rocks[i].distanceFromSun = getRandFloat(rocksDistanceFromSun_MIN, rocksDistanceFromSun_MAX);
+        rocks[i].size = getRandFloat(rocksSize_MIN, rocksSize_MAX);
 
-        double x = rocksDistancesFromSun[i] * cos(theta);
-        double z = rocksDistancesFromSun[i] * sin(theta);
+        rocks[i].orientationX = getRandFloat(rocksOrientation_MIN, rocksOrientation_MAX);
+        rocks[i].orientationY = getRandFloat(rocksOrientation_MIN, rocksOrientation_MAX);
+        rocks[i].orientationZ = getRandFloat(rocksOrientation_MIN, rocksOrientation_MAX);
+
+        rocks[i].spinningVelocityX = getRandFloat(rocksSpinningVelocity_MIN, rocksSpinningVelocity_MAX);
+        rocks[i].spinningVelocityY = getRandFloat(rocksSpinningVelocity_MIN, rocksSpinningVelocity_MAX);
+        rocks[i].spinningVelocityZ = getRandFloat(rocksSpinningVelocity_MIN, rocksSpinningVelocity_MAX);
+
+        double x = rocks[i].distanceFromSun * cos(theta);
+        double z = rocks[i].distanceFromSun * sin(theta);
         double y = rocksElevation_MIN + ((float)rand() / RAND_MAX) * (rocksElevation_MAX - rocksElevation_MIN);
 
         currTransformation = glm::translate(currTransformation, glm::vec3(x, y, z));
-        currTransformation = glm::scale(currTransformation, glm::vec3(rocksSize, rocksSize, rocksSize));
+        currTransformation = glm::scale(currTransformation, glm::vec3(rocks[i].size, rocks[i].size, rocks[i].size));
+        currTransformation = glm::rotate(currTransformation, (float)rocks[i].orientationX, glm::vec3(1.0f, 0.0f, 0.0f));
+        currTransformation = glm::rotate(currTransformation, (float)rocks[i].orientationY, glm::vec3(0.0f, 1.0f, 0.0f));
+        currTransformation = glm::rotate(currTransformation, (float)rocks[i].orientationZ, glm::vec3(0.0f, 0.0f, 1.0f));
 
-        rocksTransformations[i] = currTransformation;
+        rocks[i].transformation = currTransformation;
     }
 
     /* Application Render Loop */
@@ -196,17 +221,21 @@ int main(int argc, char* argv[])
         lightShader.setMat4("view", view);
 
         // Rendering the Earth
-        earth.updatePosition();
-        earth.draw(lightShader);
+        earth_model.updatePosition();
+        earth_model.draw(lightShader);
 
         // Rendering the Moon
-        moon.updatePosition();
-        moon.draw(lightShader);
+        moon_model.updatePosition();
+        moon_model.draw(lightShader);
 
         // Rendering the rocks around the sun
         for (unsigned int i = 0; i < rocksAmount; i++) {
-            rock.positionTranformation = rocksTransformations[i];
-            rock.draw(lightShader);
+            rocks[i].transformation = glm::rotate(rocks[i].transformation, (float)(glfwGetTime() * rocks[i].spinningVelocityX), glm::vec3(1.0f, 0.0f, 0.0f));
+            rocks[i].transformation = glm::rotate(rocks[i].transformation, (float)(glfwGetTime() * rocks[i].spinningVelocityY), glm::vec3(0.0f, 1.0f, 0.0f));
+            rocks[i].transformation = glm::rotate(rocks[i].transformation, (float)(glfwGetTime() * rocks[i].spinningVelocityZ), glm::vec3(0.0f, 0.0f, 1.0f));
+
+            rock_model.positionTranformation = rocks[i].transformation;
+            rock_model.draw(lightShader);
         }
         
         // Render Light Source
@@ -215,13 +244,13 @@ int main(int argc, char* argv[])
         lightSourceShader.setMat4("view", view);
 
         // Rendering the sun
-        sun.updatePosition();
-        sun.draw(lightSourceShader);
+        sun_model.updatePosition();
+        sun_model.draw(lightSourceShader);
 
         // Rendering the stars
         for (unsigned int i = 0; i < starsAmount; i++) {
-            star.positionTranformation = starsTransformations[i];
-            star.draw(lightSourceShader);
+            star_model.positionTranformation = starsTransformations[i];
+            star_model.draw(lightSourceShader);
         }
 
         // GLFW: Swap Buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -230,8 +259,7 @@ int main(int argc, char* argv[])
     }
 
     delete[] starsTransformations;
-    delete[] rocksTransformations;
-    delete[] rocksDistancesFromSun;
+    delete[] rocks;
 
     // GLFW: Terminate, clearing all previously allocated GLFW recourses
     glfwTerminate();
