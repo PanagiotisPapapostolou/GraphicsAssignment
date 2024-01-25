@@ -60,11 +60,11 @@ float lastFrame = 0.0f;
 /* Environment Options */
 const double sunSize = 1.0f;
 
-const unsigned int starsAmount = 0;
+const unsigned int starsAmount = 1000;
 const double starsSize = (float)(sunSize / 40);
 const double starsDistanceFromSun = (float)(sunSize * 85);
 
-const unsigned int asteroidsAmount = 0;
+const unsigned int asteroidsAmount = 100;
 const double asteroidsSize_MIN = (float)(sunSize / 600);
 const double asteroidsSize_MAX = (float)(sunSize / 100);
 const double asteroidsDistanceFromSun_MIN = (float)(sunSize * 2);
