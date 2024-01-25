@@ -141,8 +141,8 @@ int main(int argc, char* argv[])
 
     // Loading all the 3D planet models
     Model sun_model("Assets/sun/scene.gltf");
-    Model earth_model("Assets/earth/Earth.obj");
-    Model moon_model("Assets/moon/Moon.obj");
+    Model earth_model("Assets/Planets/earth/Earth_2K.obj");
+    Model moon_model("Assets/Planets/moon/Moon.obj");
     Model star_model("Assets/star/star.obj");
     Model rock_model("Assets/Rock/rock.obj");
 
