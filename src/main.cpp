@@ -44,8 +44,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 
 /* Settings */
-const unsigned int SCR_WIDTH = 2560;
-const unsigned int SCR_HEIGHT = 1440;
+unsigned int SCR_WIDTH = 1200;
+unsigned int SCR_HEIGHT = 1000;
 
 /* Camera */
 Camera camera(glm::vec3(0.0f, 0.0f, 10.0f));
@@ -60,11 +60,11 @@ float lastFrame = 0.0f;
 /* Environment Options */
 const double sunSize = 1.0f;
 
-const unsigned int starsAmount = 1000;
+const unsigned int starsAmount = 0;
 const double starsSize = (float)(sunSize / 40);
 const double starsDistanceFromSun = (float)(sunSize * 85);
 
-const unsigned int asteroidsAmount = 100;
+const unsigned int asteroidsAmount = 0;
 const double asteroidsSize_MIN = (float)(sunSize / 600);
 const double asteroidsSize_MAX = (float)(sunSize / 100);
 const double asteroidsDistanceFromSun_MIN = (float)(sunSize * 2);
@@ -78,13 +78,15 @@ const double asteroidsSpinningVelocity_MAX = (float)(sunSize / 10);
 const double asteroidsElevation_MIN = -(float)(sunSize / 5);
 const double asteroidsElevation_MAX =  (float)(sunSize / 5);
 
-
 const double venusSize = (float)(sunSize / 115);
 const double venusRadius = (float)(sunSize * 3);
 const double venusVelocity = (float)(sunSize / 15);
 const double venusSpinningVelocity = (float)(sunSize / 3500);
 
-
+const double marsSize = (float)(sunSize / 115);
+const double marsRadius = (float)(sunSize * 8);
+const double marsVelocity = (float)(sunSize / 25);
+const double marsSpinningVelocity = (float)(sunSize / 3500);
 
 const double earthSize = (float)(sunSize / 109.12144);
 const double earthRadius = (float)(sunSize * 6);
@@ -116,8 +118,13 @@ int main(int argc, char* argv[])
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	// glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
+    GLFWmonitor* myMonitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = glfwGetVideoMode(myMonitor);
+    SCR_WIDTH = mode->width;
+    SCR_HEIGHT = mode->height;
+
 	/* GLFW Window Creation */
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "GraphicsAssignment: Planet Simluation", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "GraphicsAssignment: Planet Simluation", myMonitor, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -149,6 +156,7 @@ int main(int argc, char* argv[])
 
     // Loading all the 3D planet models
     Model sun_model("Assets/sun/scene.gltf");
+    Model mars_model("Assets/Planets/Mars/Mars_2K.obj");
     Model venus_model("Assets/Planets/Venus/Venus_1K.obj");
     Model earth_model("Assets/Planets/earth/Earth_2K.obj");
     Model moon_model("Assets/Planets/moon/Moon.obj");
@@ -159,6 +167,7 @@ int main(int argc, char* argv[])
     AstronomicalObject sun(sun_model, 0, 0, 0, sunSize, NULL); sun.setOrientation(90, 0, 0);
     AstronomicalObject earth(earth_model, earthRadius, earthVelocity, earthSpinningVelocity, earthSize, &sun);
     AstronomicalObject venus(venus_model, venusRadius, venusVelocity, venusSpinningVelocity, venusSize, &sun);
+    AstronomicalObject mars(mars_model, marsRadius, marsVelocity, marsSpinningVelocity, marsSize, &sun);
     AstronomicalObject moon(moon_model, moonRadius, moonVelocity, moonSpinningVelocity, moonSize, &earth);
 
     /* Creating the asteroids */
@@ -229,9 +238,13 @@ int main(int argc, char* argv[])
         lightShader.setMat4("projection", projection);
         lightShader.setMat4("view", view);
 
-        //Rendering Venus
+        // Rendering Venus
         venus.updatePosition();
         venus.draw(lightShader);
+
+        // Rendering Mars
+        mars.updatePosition();
+        mars.draw(lightShader);
 
         // Rendering the Earth
         earth.updatePosition();
@@ -322,8 +335,5 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 
 /* GLFW: Whenever the mouse scroll wheel scrolls, this callback is called */
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    camera.ProcessMouseScroll(static_cast<float>(yoffset));
-}
-
     camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
