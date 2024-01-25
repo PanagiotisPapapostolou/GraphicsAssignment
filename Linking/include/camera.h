@@ -14,7 +14,8 @@ enum Camera_Movement { FORWARD, BACKWARD, LEFT, RIGHT, UP, DOWN };
 // Default Camera Values
 const float YAW = -90.0f;
 const float PITCH = 0.0f;
-const float SPEED = 15.5f;
+const float SPEED = 2.5f;
+const float SLOWER_SPEED = 0.2f;
 const float SENSITIVITY = 0.1f;
 const float ZOOM = 45.0f;
 
@@ -63,18 +64,6 @@ glm::mat4 Camera::GetViewMatrix(void) {
 	return glm::lookAt(this->Position, this->Position + this->Front, this->Up);
 }
 
-/* processes input received from any keyboard-like input system. Accepts input parameterin the form of camera defined ENUM (to abstract it from windowing systems) */
-void Camera::ProcessKeyBoard(Camera_Movement direction, float deltaTime)
-{
-	float velocity = this->MovementSpeed * deltaTime;
-	if (direction == FORWARD) this->Position += this->Front * velocity;
-	if (direction == BACKWARD) this->Position -= this->Front * velocity;
-	if (direction == LEFT) this->Position -= this->Right * velocity;
-	if (direction == RIGHT) this->Position += this->Right * velocity;
-	if (direction == UP) this->Position += this->WorldUp * velocity;
-	if (direction == DOWN) this->Position -= this->WorldUp * velocity;
-}
-
 /* Processes input received from a mouse input system. Expects the offset value in both the x and y direction. */
 void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constraintPitch)
 {
@@ -115,6 +104,18 @@ void Camera::updateCameraVectors(void)
 	// Also recalculate the Right and Up Vector
 	this->Right = glm::normalize(glm::cross(this->Front, this->WorldUp));
 	this->Up = glm::normalize(glm::cross(this->Right, this->Front));
+}
+
+/* processes input received from any keyboard-like input system. Accepts input parameterin the form of camera defined ENUM (to abstract it from windowing systems) */
+void Camera::ProcessKeyBoard(Camera_Movement direction, float deltaTime)
+{
+	float velocity = this->MovementSpeed * deltaTime;
+	if (direction == FORWARD) this->Position += this->Front * velocity;
+	if (direction == BACKWARD) this->Position -= this->Front * velocity;
+	if (direction == LEFT) this->Position -= this->Right * velocity;
+	if (direction == RIGHT) this->Position += this->Right * velocity;
+	if (direction == UP) this->Position += this->WorldUp * velocity;
+	if (direction == DOWN) this->Position -= this->WorldUp * velocity;
 }
 
 #endif /* CAMERA_HEADER */
