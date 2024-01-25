@@ -44,8 +44,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 
 /* Settings */
-const unsigned int SCR_WIDTH = 1200;
-const unsigned int SCR_HEIGHT = 1000;
+const unsigned int SCR_WIDTH = 2560;
+const unsigned int SCR_HEIGHT = 1440;
 
 /* Camera */
 Camera camera(glm::vec3(0.0f, 0.0f, 10.0f));
@@ -64,7 +64,7 @@ const unsigned int starsAmount = 1000;
 const double starsSize = (float)(sunSize / 40);
 const double starsDistanceFromSun = (float)(sunSize * 85);
 
-const unsigned int asteroidsAmount = 2000;
+const unsigned int asteroidsAmount = 100;
 const double asteroidsSize_MIN = (float)(sunSize / 600);
 const double asteroidsSize_MAX = (float)(sunSize / 100);
 const double asteroidsDistanceFromSun_MIN = (float)(sunSize * 2);
@@ -77,6 +77,14 @@ const double asteroidsSpinningVelocity_MIN = (float)(sunSize / 100);
 const double asteroidsSpinningVelocity_MAX = (float)(sunSize / 10);
 const double asteroidsElevation_MIN = -(float)(sunSize / 5);
 const double asteroidsElevation_MAX =  (float)(sunSize / 5);
+
+
+const double venusSize = (float)(sunSize / 115);
+const double venusRadius = (float)(sunSize * 3);
+const double venusVelocity = (float)(sunSize / 15);
+const double venusSpinningVelocity = (float)(sunSize / 3500);
+
+
 
 const double earthSize = (float)(sunSize / 109.12144);
 const double earthRadius = (float)(sunSize * 6);
@@ -141,6 +149,7 @@ int main(int argc, char* argv[])
 
     // Loading all the 3D planet models
     Model sun_model("Assets/sun/scene.gltf");
+    Model venus_model("Assets/Planets/Venus/Venus_1K.obj");
     Model earth_model("Assets/Planets/earth/Earth_2K.obj");
     Model moon_model("Assets/Planets/moon/Moon.obj");
     Model star_model("Assets/star/star.obj");
@@ -149,6 +158,7 @@ int main(int argc, char* argv[])
     /* Creating all the planets, stars, rocks etc. */
     AstronomicalObject sun(sun_model, 0, 0, 0, sunSize, NULL); sun.setOrientation(90, 0, 0);
     AstronomicalObject earth(earth_model, earthRadius, earthVelocity, earthSpinningVelocity, earthSize, &sun);
+    AstronomicalObject venus(venus_model, venusRadius, venusVelocity, venusSpinningVelocity, venusSize, &sun);
     AstronomicalObject moon(moon_model, moonRadius, moonVelocity, moonSpinningVelocity, moonSize, &earth);
 
     /* Creating the asteroids */
@@ -218,6 +228,10 @@ int main(int argc, char* argv[])
         glm::mat4 view = camera.GetViewMatrix();
         lightShader.setMat4("projection", projection);
         lightShader.setMat4("view", view);
+
+        //Rendering Venus
+        venus.updatePosition();
+        venus.draw(lightShader);
 
         // Rendering the Earth
         earth.updatePosition();
@@ -308,5 +322,8 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 
 /* GLFW: Whenever the mouse scroll wheel scrolls, this callback is called */
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    camera.ProcessMouseScroll(static_cast<float>(yoffset));
+}
+
     camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
