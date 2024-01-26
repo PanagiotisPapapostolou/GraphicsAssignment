@@ -103,6 +103,11 @@ const double jupiterRadius = (float)(sunSize * 9);
 const double jupiterVelocity = (float)(sunSize / 30);
 const double jupiterSpinningVelocity = (float)(sunSize / 3500);
 
+const double saturnSize = (float)(sunSize / 25);
+const double saturnRadius = (float)(sunSize * 10);
+const double saturnVelocity = (float)(sunSize / 35);
+const double saturnSpinningVelocity = (float)(sunSize / 3500);
+
 const double earthSize = (float)(sunSize / 109.12144);
 const double earthRadius = (float)(sunSize * 6);
 const double earthVelocity = (float)(sunSize / 20);
@@ -172,6 +177,8 @@ int main(int argc, char* argv[])
     Model pluto_model("Assets/Planets/Pluto/Pluto_1K.obj");
     Model venus_model("Assets/Planets/Venus/Venus_1K.obj");
     Model jupiter_model("Assets/Planets/Jupiter/jupiter.obj");
+    Model saturn_model("Assets/Planets/Saturn/saturn.obj");
+    Model saturn_ring_model("Assets/Planets/Saturn/ring.obj");
     Model earth_model("Assets/Planets/earth/Earth_2K.obj");
     Model moon_model("Assets/Planets/moon/Moon.obj");
     Model star_model("Assets/star/star.obj");
@@ -185,6 +192,8 @@ int main(int argc, char* argv[])
     AstronomicalObject mercury(mercury_model, mercuryRadius, mercuryVelocity, mercurySpinningVelocity, mercurySize, &sun); mercury.setStartPositionOffset(rand() % 360);
     AstronomicalObject pluto(pluto_model, plutoRadius, plutoVelocity, plutoSpinningVelocity, plutoSize, &sun); pluto.setStartPositionOffset(rand() % 360);
     AstronomicalObject jupiter(jupiter_model, jupiterRadius, jupiterVelocity, jupiterSpinningVelocity, jupiterSize, &sun); jupiter.setStartPositionOffset(rand() % 360);
+    AstronomicalObject saturn(saturn_model, saturnRadius, saturnVelocity, saturnSpinningVelocity, saturnSize, &sun); saturn.setOrientation(90, 90, 0);
+    AstronomicalObject saturn_ring(saturn_ring_model, saturnRadius, saturnVelocity, saturnSpinningVelocity, saturnSize, &sun); saturn.setOrientation(90.0f, 180.0f, 45.0f);
     AstronomicalObject moon(moon_model, moonRadius, moonVelocity, moonSpinningVelocity, moonSize, &earth);
 
     /* Creating the asteroids */
@@ -275,6 +284,10 @@ int main(int argc, char* argv[])
         jupiter.updatePosition();
         jupiter.draw(lightShader);
 
+        // Rendering Saturn
+        saturn.updatePosition();
+        saturn.draw(lightShader);
+
         // Rendering the Earth
         earth.updatePosition();
         earth.draw(lightShader);
@@ -297,6 +310,10 @@ int main(int argc, char* argv[])
         // Rendering the sun
         sun.updatePosition();
         sun.draw(lightSourceShader);
+
+        // Rendering Saturn Ring
+        saturn_ring.updatePosition();
+        saturn_ring.draw(lightSourceShader);
 
         // Rendering the stars backgound
         for (unsigned int i = 0; i < starsAmount; i++) {
