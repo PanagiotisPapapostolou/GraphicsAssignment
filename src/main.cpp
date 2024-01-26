@@ -88,6 +88,21 @@ const double marsRadius = (float)(sunSize * 8);
 const double marsVelocity = (float)(sunSize / 25);
 const double marsSpinningVelocity = (float)(sunSize / 3500);
 
+const double mercurySize = (float)(sunSize / 55);
+const double mercuryRadius = (float)(sunSize * 2);
+const double mercuryVelocity = (float)(sunSize / 22);
+const double mercurySpinningVelocity = (float)(sunSize / 3500);
+
+const double plutoSize = (float)(sunSize / 1580);
+const double plutoRadius = (float)(sunSize * 18);
+const double plutoVelocity = (float)(sunSize / 30);
+const double plutoSpinningVelocity = (float)(sunSize / 3500);
+
+const double jupiterSize = (float)(sunSize / 25);
+const double jupiterRadius = (float)(sunSize * 9);
+const double jupiterVelocity = (float)(sunSize / 30);
+const double jupiterSpinningVelocity = (float)(sunSize / 3500);
+
 const double earthSize = (float)(sunSize / 109.12144);
 const double earthRadius = (float)(sunSize * 6);
 const double earthVelocity = (float)(sunSize / 20);
@@ -99,10 +114,6 @@ const double moonVelocity = (float)(earthSize * 20);
 const double moonSpinningVelocity = 0.0f;
 
 EnvironmentColors envColor = { 0.0f, 0.0f, 0.0f, 1.0f };
-
-struct Point { double x, y, z; };
-
-bool paused = false;
 
 // Lighting
 glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
@@ -157,7 +168,10 @@ int main(int argc, char* argv[])
     // Loading all the 3D planet models
     Model sun_model("Assets/sun/scene.gltf");
     Model mars_model("Assets/Planets/Mars/Mars_2K.obj");
+    Model mercury_model("Assets/Planets/Mercury/Mercury_1K.obj");
+    Model pluto_model("Assets/Planets/Pluto/Pluto_1K.obj");
     Model venus_model("Assets/Planets/Venus/Venus_1K.obj");
+    Model jupiter_model("Assets/Planets/Jupiter/jupiter.obj");
     Model earth_model("Assets/Planets/earth/Earth_2K.obj");
     Model moon_model("Assets/Planets/moon/Moon.obj");
     Model star_model("Assets/star/star.obj");
@@ -165,9 +179,12 @@ int main(int argc, char* argv[])
 
     /* Creating all the planets, stars, rocks etc. */
     AstronomicalObject sun(sun_model, 0, 0, 0, sunSize, NULL); sun.setOrientation(90, 0, 0);
-    AstronomicalObject earth(earth_model, earthRadius, earthVelocity, earthSpinningVelocity, earthSize, &sun);
-    AstronomicalObject venus(venus_model, venusRadius, venusVelocity, venusSpinningVelocity, venusSize, &sun);
-    AstronomicalObject mars(mars_model, marsRadius, marsVelocity, marsSpinningVelocity, marsSize, &sun);
+    AstronomicalObject earth(earth_model, earthRadius, earthVelocity, earthSpinningVelocity, earthSize, &sun); earth.setStartPositionOffset(rand() % 360);
+    AstronomicalObject venus(venus_model, venusRadius, venusVelocity, venusSpinningVelocity, venusSize, &sun); venus.setStartPositionOffset(rand() % 360);
+    AstronomicalObject mars(mars_model, marsRadius, marsVelocity, marsSpinningVelocity, marsSize, &sun); mars.setStartPositionOffset(rand() % 360);
+    AstronomicalObject mercury(mercury_model, mercuryRadius, mercuryVelocity, mercurySpinningVelocity, mercurySize, &sun); mercury.setStartPositionOffset(rand() % 360);
+    AstronomicalObject pluto(pluto_model, plutoRadius, plutoVelocity, plutoSpinningVelocity, plutoSize, &sun); pluto.setStartPositionOffset(rand() % 360);
+    AstronomicalObject jupiter(jupiter_model, jupiterRadius, jupiterVelocity, jupiterSpinningVelocity, jupiterSize, &sun); jupiter.setStartPositionOffset(rand() % 360);
     AstronomicalObject moon(moon_model, moonRadius, moonVelocity, moonSpinningVelocity, moonSize, &earth);
 
     /* Creating the asteroids */
@@ -245,6 +262,18 @@ int main(int argc, char* argv[])
         // Rendering Mars
         mars.updatePosition();
         mars.draw(lightShader);
+
+        // Rendering Mercury
+        mercury.updatePosition();
+        mercury.draw(lightShader);
+
+        // Rendering Pluto
+        pluto.updatePosition();
+        pluto.draw(lightShader);
+
+        // Rendering Jupiter
+        jupiter.updatePosition();
+        jupiter.draw(lightShader);
 
         // Rendering the Earth
         earth.updatePosition();
