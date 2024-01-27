@@ -1,7 +1,7 @@
 /* Filename: astronomical_object.h */
 
-#ifndef SPACE_OBJECT_HEADER
-#define SPACE_OBJECT_HEADER
+#ifndef ASTRONOMICAL_OBJECT_HEADER
+#define ASTRONOMICAL_OBJECT_HEADER
 	
 #include <model.h>
 
@@ -16,8 +16,8 @@ protected:
 	Model model3D;		// The 3D model the Astronomical Object is based on
 	double scaleFactor; // The Astronomical Object's scale
 
-	Point3D coords, orientation; // Astronomical Object Coordinates and orientation
-	AstronomicalObject* orbitObject;   // The Astronomical Object on which that Astronomical Object orbits 
+	Point3D coords, orientation;     // Astronomical Object Coordinates and orientation
+	AstronomicalObject* orbitObject; // The Astronomical Object on which that Astronomical Object orbits 
 
 	double distanceFromOrbit;			  // The radious distance of its orbit Astronomical Object
 	double velocity, spinningVelocity;    // The plant's velocity around its orbit Astronomical Object, and its spinning velocity
@@ -30,6 +30,8 @@ protected:
 	void fixOrientation(glm::mat4& transformation);
 
 public:
+	static bool simulationPaused; // Supporting variable that determines whether the user has paused the simulation
+
 	AstronomicalObject(const Model& model3D, const double distanceFromParent, const double velocity, const double spinningVelocity, const double scaleFactor, AstronomicalObject* orbitObject);
 	AstronomicalObject(void) {}
 
@@ -46,8 +48,6 @@ public:
 	void updatePosition(void);
 	void draw(Shader& shader);
 	
-	static bool simulationPaused; // Supporting variable that determines whether the user has paused the simulation
-
 	friend class BackgroundStar;
 };
 
@@ -154,4 +154,4 @@ void AstronomicalObject::fixOrientation(glm::mat4& transformation)
 
 bool AstronomicalObject::simulationPaused = false;
 
-#endif /* SPACE_OBJECT_HEADER */
+#endif /* ASTRONOMICAL_OBJECT_HEADER */

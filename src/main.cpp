@@ -30,109 +30,113 @@ struct SphericalCoordinates {
     double phi;
 };
 
-struct Rock {
-    glm::mat4 transformation;
-    double distanceFromSun;
-    double size;
-    double orientationX, orientationY, orientationZ;
-    double spinningVelocityX, spinningVelocityY, spinningVelocityZ;
-};
+/* Define the default Window Screen Dimensions */
+unsigned int SCR_WIDTH = 1200;
+unsigned int SCR_HEIGHT = 1000;
+
+/* Creating the Camera Settings */
+Camera camera(glm::vec3(0.0f, 0.0f, 10.0f));
+float lastX = SCR_WIDTH / 2.0f;
+float lastY = SCR_HEIGHT / 2.0f;
+bool firstMouse = true;
+
+/* Define some Timimg Settings */
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
+/* Define the size of the Sun */
+const double sunSize = 1.0f;
+
+/* Define the stars' settings */
+const unsigned int starsAmount    = 1000;
+const double starsSize            = (float)(sunSize / 40);
+const double starsDistanceFromSun = (float)(sunSize * 85);
+
+/* Define the asteroids' settings */
+const unsigned int asteroidsAmount = 100;
+const double asteroidsSize_MIN             =  (float)(sunSize / 600);
+const double asteroidsSize_MAX             =  (float)(sunSize / 100);
+const double asteroidsDistanceFromSun_MIN  =  (float)(sunSize * 2);
+const double asteroidsDistanceFromSun_MAX  =  (float)(sunSize * 40);
+const double asteroidsOrientation_MIN      =  0;
+const double asteroidsOrientation_MAX      =  360;
+const double asteroidsVelocity_MIN         =  (float)(sunSize / 85);
+const double asteroidsVelocity_MAX         =  (float)(sunSize / 40);
+const double asteroidsSpinningVelocity_MIN =  (float)(sunSize / 100);
+const double asteroidsSpinningVelocity_MAX =  (float)(sunSize / 10);
+const double asteroidsElevation_MIN        = -(float)(sunSize / 5);
+const double asteroidsElevation_MAX        =  (float)(sunSize / 5);
+
+/* Define the venus' settings */
+const double venusSize             = (float)(sunSize / 115);
+const double venusRadius           = (float)(sunSize * 3);
+const double venusVelocity         = (float)(sunSize / 15);
+const double venusSpinningVelocity = (float)(sunSize / 3500);
+
+/* Define the mars' settings */
+const double marsSize             = (float)(sunSize / 115);
+const double marsRadius           = (float)(sunSize * 8);
+const double marsVelocity         = (float)(sunSize / 25);
+const double marsSpinningVelocity = (float)(sunSize / 3500);
+
+/* Define the mercury's settings */
+const double mercurySize             = (float)(sunSize / 55);
+const double mercuryRadius           = (float)(sunSize * 2);
+const double mercuryVelocity         = (float)(sunSize / 22);
+const double mercurySpinningVelocity = (float)(sunSize / 3500);
+
+/* Define the pluto's settings */
+const double plutoSize             = (float)(sunSize / 1580);
+const double plutoRadius           = (float)(sunSize * 18);
+const double plutoVelocity         = (float)(sunSize / 30);
+const double plutoSpinningVelocity = (float)(sunSize / 3500);
+
+/* Define the jupiter's settings */
+const double jupiterSize             = (float)(sunSize / 25);
+const double jupiterRadius           = (float)(sunSize * 9);
+const double jupiterVelocity         = (float)(sunSize / 30);
+const double jupiterSpinningVelocity = (float)(sunSize / 3500);
+
+/* Define the saturn's settings */
+const double saturnSize             = (float)(sunSize / 25);
+const double saturnRadius           = (float)(sunSize * 10);
+const double saturnVelocity         = (float)(sunSize / 35);
+const double saturnSpinningVelocity = (float)(sunSize / 3500);
+
+/* Define the nepture's settings */
+const double neptureSize             = (float)(sunSize / 125);
+const double neptureRadius           = (float)(sunSize * 15);
+const double neptureVelocity         = (float)(sunSize / 55);
+const double neptureSpinningVelocity = (float)(sunSize / 3500);
+
+/* Define the uranus' settings */
+const double uranusSize             = (float)(sunSize / 125);
+const double uranusRadius           = (float)(sunSize * 12);
+const double uranusVelocity         = (float)(sunSize / 45);
+const double uranusSpinningVelocity = (float)(sunSize / 3500);
+
+/* Define the earth's settings */
+const double earthSize             = (float)(sunSize / 109.12144);
+const double earthRadius           = (float)(sunSize * 6);
+const double earthVelocity         = (float)(sunSize / 20);
+const double earthSpinningVelocity = (float)(sunSize / 35);
+
+/* Define the earth's moon settings */
+const double moonSize             = (float)(earthSize / 4);
+const double moonRadius           = (float)(earthSize * 32);
+const double moonVelocity         = (float)(earthSize * 20);
+const double moonSpinningVelocity = 0.0f;
+
+/* Creating the environoment color and lighting */
+EnvironmentColors envColor = { 0.0f, 0.0f, 0.0f, 1.0f };
+glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 
-/* Settings */
-unsigned int SCR_WIDTH = 1200;
-unsigned int SCR_HEIGHT = 1000;
-
-/* Camera */
-Camera camera(glm::vec3(0.0f, 0.0f, 10.0f));
-float lastX = SCR_WIDTH / 2.0f;
-float lastY = SCR_HEIGHT / 2.0f;
-bool firstMouse = true;
-
-/* Timimg */
-float deltaTime = 0.0f;
-float lastFrame = 0.0f;
-
-/* Environment Options */
-const double sunSize = 1.0f;
-
-const unsigned int starsAmount = 1000;
-const double starsSize = (float)(sunSize / 40);
-const double starsDistanceFromSun = (float)(sunSize * 85);
-
-const unsigned int asteroidsAmount = 100;
-const double asteroidsSize_MIN = (float)(sunSize / 600);
-const double asteroidsSize_MAX = (float)(sunSize / 100);
-const double asteroidsDistanceFromSun_MIN = (float)(sunSize * 2);
-const double asteroidsDistanceFromSun_MAX = (float)(sunSize * 40);
-const double asteroidsOrientation_MIN = 0;
-const double asteroidsOrientation_MAX = 360;
-const double asteroidsVelocity_MIN = (float)(sunSize / 85);
-const double asteroidsVelocity_MAX = (float)(sunSize / 40);
-const double asteroidsSpinningVelocity_MIN = (float)(sunSize / 100);
-const double asteroidsSpinningVelocity_MAX = (float)(sunSize / 10);
-const double asteroidsElevation_MIN = -(float)(sunSize / 5);
-const double asteroidsElevation_MAX =  (float)(sunSize / 5);
-
-const double venusSize = (float)(sunSize / 115);
-const double venusRadius = (float)(sunSize * 3);
-const double venusVelocity = (float)(sunSize / 15);
-const double venusSpinningVelocity = (float)(sunSize / 3500);
-
-const double marsSize = (float)(sunSize / 115);
-const double marsRadius = (float)(sunSize * 8);
-const double marsVelocity = (float)(sunSize / 25);
-const double marsSpinningVelocity = (float)(sunSize / 3500);
-
-const double mercurySize = (float)(sunSize / 55);
-const double mercuryRadius = (float)(sunSize * 2);
-const double mercuryVelocity = (float)(sunSize / 22);
-const double mercurySpinningVelocity = (float)(sunSize / 3500);
-
-const double plutoSize = (float)(sunSize / 1580);
-const double plutoRadius = (float)(sunSize * 18);
-const double plutoVelocity = (float)(sunSize / 30);
-const double plutoSpinningVelocity = (float)(sunSize / 3500);
-
-const double jupiterSize = (float)(sunSize / 25);
-const double jupiterRadius = (float)(sunSize * 9);
-const double jupiterVelocity = (float)(sunSize / 30);
-const double jupiterSpinningVelocity = (float)(sunSize / 3500);
-
-const double saturnSize = (float)(sunSize / 25);
-const double saturnRadius = (float)(sunSize * 10);
-const double saturnVelocity = (float)(sunSize / 35);
-const double saturnSpinningVelocity = (float)(sunSize / 3500);
-
-const double neptureSize = (float)(sunSize / 125);
-const double neptureRadius = (float)(sunSize * 15);
-const double neptureVelocity = (float)(sunSize / 55);
-const double neptureSpinningVelocity = (float)(sunSize / 3500);
-
-const double uranusSize = (float)(sunSize / 125);
-const double uranusRadius = (float)(sunSize * 12);
-const double uranusVelocity = (float)(sunSize / 45);
-const double uranusSpinningVelocity = (float)(sunSize / 3500);
-
-const double earthSize = (float)(sunSize / 109.12144);
-const double earthRadius = (float)(sunSize * 6);
-const double earthVelocity = (float)(sunSize / 20);
-const double earthSpinningVelocity = (float)(sunSize / 35);
-
-const double moonSize = (float)(earthSize / 4);
-const double moonRadius = (float)(earthSize * 32);
-const double moonVelocity = (float)(earthSize * 20);
-const double moonSpinningVelocity = 0.0f;
-
-EnvironmentColors envColor = { 0.0f, 0.0f, 0.0f, 1.0f };
-
-// Lighting
-glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
-
+/* Main Function */
 int main(int argc, char* argv[])
 {
     srand(static_cast<unsigned int>(glfwGetTime()));
@@ -177,8 +181,8 @@ int main(int argc, char* argv[])
     glEnable(GL_DEPTH_TEST);
 
     // Build and Compile the application shaders
-    Shader lightShader("src/shaders/shader.vs", "src/shaders/shader.fs");
-    Shader lightSourceShader("src/shaders/lightShader.vs", "src/shaders/lightShader.fs");
+    Shader defaultShader("src/shaders/shader.vs", "src/shaders/shader.fs");
+    Shader lightShader("src/shaders/lightShader.vs", "src/shaders/lightShader.fs");
 
     // Loading all the 3D planet models
     Model sun_model("Assets/sun/scene.gltf");
@@ -198,18 +202,25 @@ int main(int argc, char* argv[])
 
     /* Creating all the planets, stars, rocks etc. */
     AstronomicalObject sun(sun_model, 0, 0, 0, sunSize, NULL); sun.setOrientation(90, 0, 0);
-    AstronomicalObject earth(earth_model, earthRadius, earthVelocity, earthSpinningVelocity, earthSize, &sun); earth.setStartPositionOffset(rand() % 360);
-    AstronomicalObject venus(venus_model, venusRadius, venusVelocity, venusSpinningVelocity, venusSize, &sun); venus.setStartPositionOffset(rand() % 360);
-    AstronomicalObject mars(mars_model, marsRadius, marsVelocity, marsSpinningVelocity, marsSize, &sun); mars.setStartPositionOffset(rand() % 360);
-    AstronomicalObject mercury(mercury_model, mercuryRadius, mercuryVelocity, mercurySpinningVelocity, mercurySize, &sun); mercury.setStartPositionOffset(rand() % 360);
-    AstronomicalObject pluto(pluto_model, plutoRadius, plutoVelocity, plutoSpinningVelocity, plutoSize, &sun); pluto.setStartPositionOffset(rand() % 360);
-    AstronomicalObject jupiter(jupiter_model, jupiterRadius, jupiterVelocity, jupiterSpinningVelocity, jupiterSize, &sun); jupiter.setStartPositionOffset(rand() % 360);
-    AstronomicalObject saturn(saturn_model, saturnRadius, saturnVelocity, saturnSpinningVelocity, saturnSize, &sun); saturn.setOrientation(90, 90, 0);
-    AstronomicalObject saturn_ring(saturn_ring_model, saturnRadius, saturnVelocity, saturnSpinningVelocity, saturnSize, &sun); saturn.setOrientation(90.0f, 180.0f, 45.0f);
-    AstronomicalObject nepture(nepture_model, neptureRadius, neptureVelocity, neptureSpinningVelocity, neptureSize, &sun); saturn.setOrientation(0.0f, 0.0f, 0.0f);
-    AstronomicalObject uranus(uranus_model, uranusRadius, uranusVelocity, uranusSpinningVelocity, uranusSize, &sun); saturn.setOrientation(0.0f, 0.0f, 0.0f);
+    AstronomicalObject earth(earth_model, earthRadius, earthVelocity, earthSpinningVelocity, earthSize, &sun); 
+    AstronomicalObject venus(venus_model, venusRadius, venusVelocity, venusSpinningVelocity, venusSize, &sun); 
+    AstronomicalObject mars(mars_model, marsRadius, marsVelocity, marsSpinningVelocity, marsSize, &sun); 
+    AstronomicalObject mercury(mercury_model, mercuryRadius, mercuryVelocity, mercurySpinningVelocity, mercurySize, &sun);
+    AstronomicalObject pluto(pluto_model, plutoRadius, plutoVelocity, plutoSpinningVelocity, plutoSize, &sun); 
+    AstronomicalObject jupiter(jupiter_model, jupiterRadius, jupiterVelocity, jupiterSpinningVelocity, jupiterSize, &sun); 
+    AstronomicalObject saturn(saturn_model, saturnRadius, saturnVelocity, saturnSpinningVelocity, saturnSize, &sun); 
+    AstronomicalObject saturn_ring(saturn_ring_model, saturnRadius, saturnVelocity, saturnSpinningVelocity, saturnSize, &sun); 
+    AstronomicalObject nepture(nepture_model, neptureRadius, neptureVelocity, neptureSpinningVelocity, neptureSize, &sun); 
+    AstronomicalObject uranus(uranus_model, uranusRadius, uranusVelocity, uranusSpinningVelocity, uranusSize, &sun);
     AstronomicalObject moon(moon_model, moonRadius, moonVelocity, moonSpinningVelocity, moonSize, &earth);
 
+    /* Setting the orientation of every planet */
+    saturn.setOrientation(90.0f, 90.0f, 0.0f);
+    saturn_ring.setOrientation(45.0f, 180.0f, 45.0f);
+    nepture.setOrientation(0.0f, 0.0f, 0.0f);
+    uranus.setOrientation(0.0f, 0.0f, 0.0f);
+       
+    /* Setting a random starting position for every planet */
     earth.setStartPositionOffset(rand() % 360);
     venus.setStartPositionOffset(rand() % 360);
     mars.setStartPositionOffset(rand() % 360);
@@ -270,93 +281,60 @@ int main(int argc, char* argv[])
         // Processing the input
         processInput(window);
 
-        // Rendering
+        // Rendering the environment background
         glClearColor(envColor.red, envColor.green, envColor.blue, envColor.alpha);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-        // Don't forget to enable shader before setting uniforms
-        lightShader.use();
-        lightShader.setVec3("objectColor", 1.0f, 1.0f, 1.0f);
-        lightShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-        lightShader.setVec3("lightPos", lightPos);
-        lightShader.setVec3("viewPos", camera.Position);
+        // Enable the default shader before setting uniforms
+        defaultShader.use();
+        defaultShader.setVec3("objectColor", 1.0f, 1.0f, 1.0f);
+        defaultShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+        defaultShader.setVec3("lightPos", lightPos);
+        defaultShader.setVec3("viewPos", camera.Position);
 
         // View/Projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
-        lightShader.setMat4("projection", projection);
-        lightShader.setMat4("view", view);
+        defaultShader.setMat4("projection", projection);
+        defaultShader.setMat4("view", view);
 
-        // Rendering Venus
-        venus.updatePosition();
-        venus.draw(lightShader);
-
-        // Rendering Mars
-        mars.updatePosition();
-        mars.draw(lightShader);
-
-        // Rendering Mercury
-        mercury.updatePosition();
-        mercury.draw(lightShader);
-
-        // Rendering Pluto
-        pluto.updatePosition();
-        pluto.draw(lightShader);
-
-        // Rendering Jupiter
-        jupiter.updatePosition();
-        jupiter.draw(lightShader);
-
-        // Rendering Saturn
-        saturn.updatePosition();
-        saturn.draw(lightShader);
-
-        // Rendering Nepture
-        nepture.updatePosition();
-        nepture.draw(lightShader);
-
-        // Rendering Uranus
-        uranus.updatePosition();
-        uranus.draw(lightShader);
-
-        // Rendering the Earth
-        earth.updatePosition();
-        earth.draw(lightShader);
-
-        // Rendering the Moon
-        moon.updatePosition();
-        moon.draw(lightShader);
+        /* Rendering every planet */
+        venus.updatePosition();   venus.draw(defaultShader);   // Rendering Venus
+        mars.updatePosition();    mars.draw(defaultShader);    // Rendering Mars
+        mercury.updatePosition(); mercury.draw(defaultShader); // Rendering Mercury
+        pluto.updatePosition();   pluto.draw(defaultShader);   // Rendering Pluto
+        jupiter.updatePosition(); jupiter.draw(defaultShader); // Rendering Jupiter
+        saturn.updatePosition();  saturn.draw(defaultShader);  // Rendering Saturn
+        nepture.updatePosition(); nepture.draw(defaultShader); // Rendering Nepture
+        uranus.updatePosition();  uranus.draw(defaultShader);  // Rendering Uranus
+        earth.updatePosition();   earth.draw(defaultShader);   // Rendering the Earth
+        moon.updatePosition();    moon.draw(defaultShader);    // Rendering the Moon
 
         // Rendering the asteroids around the sun
         for (unsigned int i = 0; i < asteroidsAmount; i++) {
             asteroids[i].updatePosition();
-            asteroids[i].draw(lightShader);
+            asteroids[i].draw(defaultShader);
         }
         
-        // Render Light Source
-        lightSourceShader.use();
-        lightSourceShader.setMat4("projection", projection);
-        lightSourceShader.setMat4("view", view);
+        // Enable the light shader
+        lightShader.use();
+        lightShader.setMat4("projection", projection);
+        lightShader.setMat4("view", view);
 
-        // Rendering the sun
-        sun.updatePosition();
-        sun.draw(lightSourceShader);
-
-        // Rendering Saturn Ring
-        saturn_ring.updatePosition();
-        saturn_ring.draw(lightSourceShader);
+        /* Rendering the Sun and the Saturn Ring */
+        sun.updatePosition();         sun.draw(lightShader);         // Rendering the sun
+        saturn_ring.updatePosition(); saturn_ring.draw(lightShader); // Rendering Saturn Ring
 
         // Rendering the stars backgound
         for (unsigned int i = 0; i < starsAmount; i++) {
             stars[i].updatePosition();
-            stars[i].draw(lightSourceShader);
+            stars[i].draw(lightShader);
         }
-
         // GLFW: Swap Buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
+    // Deallocate memory used
     delete[] stars;
     delete[] asteroids;
 
@@ -377,11 +355,23 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) camera.ProcessKeyBoard(UP, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) camera.ProcessKeyBoard(DOWN, deltaTime);
 
-    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && !AstronomicalObject::simulationPaused) { AstronomicalObject::simulationPaused = true; std::this_thread::sleep_for(std::chrono::milliseconds(200)); }
-    else if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && AstronomicalObject::simulationPaused) { AstronomicalObject::simulationPaused = false; std::this_thread::sleep_for(std::chrono::milliseconds(200)); }
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && !AstronomicalObject::simulationPaused) { 
+        AstronomicalObject::simulationPaused = true; 
+        std::this_thread::sleep_for(std::chrono::milliseconds(200)); 
+    }
+    else if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && AstronomicalObject::simulationPaused) { 
+        AstronomicalObject::simulationPaused = false; 
+        std::this_thread::sleep_for(std::chrono::milliseconds(200)); 
+    }
     
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS && camera.MovementSpeed == SPEED) { camera.MovementSpeed = SLOWER_SPEED; std::this_thread::sleep_for(std::chrono::milliseconds(100)); }
-    else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS && camera.MovementSpeed == SLOWER_SPEED) { camera.MovementSpeed = SPEED; std::this_thread::sleep_for(std::chrono::milliseconds(100)); }
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS && camera.MovementSpeed == SPEED) { 
+        camera.MovementSpeed = SLOWER_SPEED; 
+        std::this_thread::sleep_for(std::chrono::milliseconds(100)); 
+    }
+    else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS && camera.MovementSpeed == SLOWER_SPEED) { 
+        camera.MovementSpeed = SPEED; 
+        std::this_thread::sleep_for(std::chrono::milliseconds(100)); 
+    }
 }
 
 /* GLFW: Whenever the window size changed (by OS or user resize) this callback function executes */

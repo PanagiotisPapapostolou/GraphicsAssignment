@@ -8,8 +8,10 @@
 /* Subclass for the background stars. Represents only one star */
 class BackgroundStar : public AstronomicalObject {
 public:
-	BackgroundStar(const Model& model3D, const double distanceFromParent, const double scaleFactor, AstronomicalObject* parentObject) : AstronomicalObject(model3D, distanceFromParent, 0.0f, 0.0f, scaleFactor, parentObject) {}
-	BackgroundStar(void) {}
+	BackgroundStar(const Model& model3D, const double distanceFromParent, const double scaleFactor, AstronomicalObject* parentObject) 
+		: AstronomicalObject(model3D, distanceFromParent, 0.0f, 0.0f, scaleFactor, parentObject) {}
+	
+	BackgroundStar(void) {} // Default Constructor
 
 	void updatePosition(void);
 };
