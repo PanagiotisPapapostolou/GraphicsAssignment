@@ -108,6 +108,16 @@ const double saturnRadius = (float)(sunSize * 10);
 const double saturnVelocity = (float)(sunSize / 35);
 const double saturnSpinningVelocity = (float)(sunSize / 3500);
 
+const double neptureSize = (float)(sunSize / 125);
+const double neptureRadius = (float)(sunSize * 15);
+const double neptureVelocity = (float)(sunSize / 55);
+const double neptureSpinningVelocity = (float)(sunSize / 3500);
+
+const double uranusSize = (float)(sunSize / 125);
+const double uranusRadius = (float)(sunSize * 12);
+const double uranusVelocity = (float)(sunSize / 45);
+const double uranusSpinningVelocity = (float)(sunSize / 3500);
+
 const double earthSize = (float)(sunSize / 109.12144);
 const double earthRadius = (float)(sunSize * 6);
 const double earthVelocity = (float)(sunSize / 20);
@@ -179,6 +189,8 @@ int main(int argc, char* argv[])
     Model jupiter_model("Assets/Planets/Jupiter/jupiter.obj");
     Model saturn_model("Assets/Planets/Saturn/saturn.obj");
     Model saturn_ring_model("Assets/Planets/Saturn/ring.obj");
+    Model nepture_model("Assets/Planets/Nepture/Nepture.obj");
+    Model uranus_model("Assets/Planets/Uranus/Uranus.obj");
     Model earth_model("Assets/Planets/earth/Earth_2K.obj");
     Model moon_model("Assets/Planets/moon/Moon.obj");
     Model star_model("Assets/star/star.obj");
@@ -194,7 +206,18 @@ int main(int argc, char* argv[])
     AstronomicalObject jupiter(jupiter_model, jupiterRadius, jupiterVelocity, jupiterSpinningVelocity, jupiterSize, &sun); jupiter.setStartPositionOffset(rand() % 360);
     AstronomicalObject saturn(saturn_model, saturnRadius, saturnVelocity, saturnSpinningVelocity, saturnSize, &sun); saturn.setOrientation(90, 90, 0);
     AstronomicalObject saturn_ring(saturn_ring_model, saturnRadius, saturnVelocity, saturnSpinningVelocity, saturnSize, &sun); saturn.setOrientation(90.0f, 180.0f, 45.0f);
+    AstronomicalObject nepture(nepture_model, neptureRadius, neptureVelocity, neptureSpinningVelocity, neptureSize, &sun); saturn.setOrientation(0.0f, 0.0f, 0.0f);
+    AstronomicalObject uranus(uranus_model, uranusRadius, uranusVelocity, uranusSpinningVelocity, uranusSize, &sun); saturn.setOrientation(0.0f, 0.0f, 0.0f);
     AstronomicalObject moon(moon_model, moonRadius, moonVelocity, moonSpinningVelocity, moonSize, &earth);
+
+    earth.setStartPositionOffset(rand() % 360);
+    venus.setStartPositionOffset(rand() % 360);
+    mars.setStartPositionOffset(rand() % 360);
+    mercury.setStartPositionOffset(rand() % 360);
+    pluto.setStartPositionOffset(rand() % 360);
+    jupiter.setStartPositionOffset(rand() % 360);
+    nepture.setStartPositionOffset(rand() % 360);
+    uranus.setStartPositionOffset(rand() % 360);
 
     /* Creating the asteroids */
     AstronomicalObject* asteroids = new AstronomicalObject[asteroidsAmount];
@@ -287,6 +310,14 @@ int main(int argc, char* argv[])
         // Rendering Saturn
         saturn.updatePosition();
         saturn.draw(lightShader);
+
+        // Rendering Nepture
+        nepture.updatePosition();
+        nepture.draw(lightShader);
+
+        // Rendering Uranus
+        uranus.updatePosition();
+        uranus.draw(lightShader);
 
         // Rendering the Earth
         earth.updatePosition();
